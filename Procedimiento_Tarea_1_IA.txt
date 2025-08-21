@@ -1,1 +1,23 @@
-Ahora debería actualizarse el contenido en el GitHub
+1. Variables de Estado
+
+En esta sección, se define el estado inicial del robot mediante el diccionario estado_robot, que contiene tres key principales: posicion, que representa las coordenadas (x, y) del robot en un grid 2D iniciando en (0, 0); bateria, que indica el nivel de energía inicial del 100%; y objetivo_alcanzado, un booleano que comienza en False y se activa cuando el robot llega a la posición (2, 2). Esta estructura de estado permite modelar de manera integral la situación del robot, incluyendo su ubicación, recursos energéticos y progreso hacia la meta. La elección de un diccionario facilita el acceso y la modificación de estas variables durante la simulación, y el estado inicial se imprime para verificar los valores de partida.
+
+2. Espacio de Estados
+
+El espacio de estados se redefine para incluir todas las combinaciones posibles de posición y nivel de batería. Las posiciones se generan mediante una list comprehension que cubre todas las coordenadas (x, y) en un rango de 3x3 (desde (0,0) hasta (2,2)), mientras que las baterias ahora se representan como un rango numérico de 0 a 100 en incrementos de 10, a diferencia de la versión original que usaba categorías como "alta" o "baja". Esto crea un espacio_estados más granular y realista, con 9 posiciones y 11 niveles de batería, resultando en 99 estados posibles. Este cambio permite modelar con mayor precisión el consumo gradual de energía y las transiciones entre estados, lo que es crucial para estrategias de planificación avanzada.
+
+3. Espacio de Acciones
+
+El espacio de acciones se mantiene con las cinco acciones originales: adelante, atras, izquierda, derecha y recargar. Estas acciones representan los movimientos básicos en las cuatro direcciones cardinales y la acción de recargar la batería. La lista acciones se imprime para mostrar todas las opciones disponibles para el robot. La inclusión de recargar como una acción explícita es clave, ya que introduce la necesidad de gestionar recursos limitados (batería) y permite al robot recuperar energía cuando sea necesario, añadiendo una capa estratégica al problema.
+
+4. Función de Recompensa
+
+La función recompensa se modifica significativamente para incorporar un sistema de incentivos y castigos más complejo. Ahora toma parámetros adicionales como paso y objetivo_alcanzado_en_menos_de_5 para evaluar el contexto de la acción. Se asignan recompensas positivas por recargar (+5) y por alcanzar el objetivo (+10), con un bonus adicional de +20 si el objetivo se logra en menos de 5 pasos. Los castigos incluyen -1 por cada movimiento normal (costo de operación) y -5 por intentar moverse sin batería, lo que penaliza la mala planificación. Este diseño fomenta comportamientos deseables, como la eficiencia energética y la rapidez, mientras desincentiva acciones contraproducentes, creando una función de utilidad que guía al robot hacia un desempeño óptimo.
+
+5. Ambiente y Simulación
+
+La función mover_robot se actualiza para implementar el consumo de batería y las restricciones de movimiento. Ahora, cada acción de movimiento (adelante, atras, etc.) consume 10% de batería, reduciendo el valor de estado["bateria"] en 10 unidades, y se verifica si la batería es suficiente para realizar la acción; si la batería llega a 0, el robot no puede moverse hasta que recargue. La acción recargar restablece la batería al 100%. Además, se mantiene la lógica para actualizar la posición y verificar si se alcanza el objetivo (2,2). Estas modificaciones simulan las limitaciones físicas de un robot real, donde la energía es un recurso crítico y las acciones tienen consecuencias directas en el estado del sistema.
+
+6. Estrategias de Movimiento y Simulación Comparativa
+
+Se implementan tres estrategias de decisión: estrategia_aleatoria (elige acciones al azar), estrategia_conservadora (recarga cuando la batería está baja y prioriza moverse hacia el objetivo de manera segura), y estrategia_agresiva (solo recarga cuando la batería se agota y se mueve directamente al objetivo). La función simular_robot ejecuta cada estrategia, registrando el estado, las acciones y las recompensas en cada paso, y calcula la recompensa total. Esta sección permite comparar el desempeño de diferentes políticas de decision, mostrando cómo la planificación afecta la eficiencia y la recompensa final. La simulación incluye métricas como la recompensa total, si se alcanzó el objetivo y la batería final, proporcionando una evaluación cuantitativa de cada estrategia.
